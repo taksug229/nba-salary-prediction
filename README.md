@@ -1,6 +1,6 @@
 # Moneyball in NBA: Predicting NBA player salary
 
-![Insert Cover Photo]()
+![Cover](img/cover.jpg)
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -17,17 +17,17 @@
     - [Correlation](#correlation)
 
 3. [Prediction](#prediction)
-    - [Baseline Model](#)
-    - [Model Selection](#)
-    - [Feature Selection](#)
-    - [Dataset Selection](#)
-    - [Hyperparameter Tuning](#)
-    - [Other attempts to improve prediction](#)
-    - [Best Model](#)
-        - [Evaluation](#)
-        - [Underrated & Overrated Players](#)
-4. [Conclusion](#conclusion)
-    * [Future works](#future-works)
+    - [Baseline Model](#baseline-model)
+    - [Model Selection](#model-selection)
+    - [Feature Selection](#feature-selection)
+    - [Dataset Selection](#dataset-selection)
+    - [Hyperparameter Tuning](#hyperparameter-tuning)
+    - [Evaluation](#evaluation)
+    - [Underrated & Overrated Players](#underrated-&-overrated-players)
+4. [Future works](#future-works)
+    - [More feature engineering](#more-feature-engineering)
+    - [Nice to have](#nice-to-have)
+
 - [Built with](#built-with)
 - [Author](#author)
 
@@ -36,8 +36,9 @@
 ## Introduction
 
 ### Background
+I've been playing basketball for more than 20 years and it's one of my favorite things to do in my free time. I've been a fan of the NBA since the 90's and basketball is my favorite sport to watch.
 
-![Basketball Image]()
+Basketball has many different stats that measure player's performance. I was curious if I can predict the salary of the NBA players based on their stats. If I can precisely predict the salary, I can give recommendation to teams to recruit the "under valued players" like in the movie, Moneyball, to maximize their return on investments. 
 
 ### Data
 
@@ -178,33 +179,89 @@ I decided to proceed with these 6 variables that lowered my RMSE to **0.04653**.
 
 ### Dataset Selection
 
+After selecting my features, I trained my prediction using different number of years. My initial train data used all of the last 19 years worth of data, so I tested my prediction by training with more recent years. 
+After testing with different sets of years, I found out that using the dataset from the last 10 years was consistenly predicting the best with an RMSE of **0.04614**. 
 
+This shows that the older seasons were not as relevant since the proportion of player's salary to the salary cap was higher. The RMSE decreased when I trained on datasets that were less than 10 years and this could be because there were not enough data to train on. It seemed like the sweet spot was using the last 10 years so I decided to proceed with this dataset.
+
+![Years in datasets](img/datayears.png)
 
 ### Hyperparameter Tuning
+I've used Sklearn's GridSearch library to find the best hyperparameters.
+After multiple iterations, I got a RMSE of **0.04603** using the following parameters.
 
-### Other attempts to improve prediction
+- 'learning_rate': 0.1 
+- 'max_depth': 3 
+- 'min_samples_leaf': 2 
+- 'min_samples_split': 8 
+- 'n_estimators': 75
 
-### Best Model
-- Evaluation
-- Underrated & Overrated Players
+### Evaluation
+
+My best score with RMSE of **0.04603** in dollar amount for 2019 season is equivalent to $4.7M in error per prediction. My baseline model was $8M (RMSE 0.0784) in error per prediction so I was able to improve by $3.3M. 
+
+You can see that my residual plot improved significantly from the baseline model.
+
+![Best Model Residual](img/bestmodel_residual.png)
+
+However, my RMSE of 0.04603 still has a high error rate since the mean salary for 2019 was 0.06398. This makes my error rate to roughly 72% of the average salary so there is more room for improvement.
+
+
+| 2019 Salary Distribution  | Value   |
+| ------------------------- | ------- |
+| Count                     | 530     |
+| Mean                      | 0.06398 |
+| Standard Deviation        | 0.07724 |
+| Min                       | 0.00046 |
+| 25%                       | 0.01353 |
+| 50%                       | 0.02706 |
+| 75%                       | 0.09346 |
+| Max                       | 0.3677  |
+
+![Boxplot 2019](img/boxplot2019.png)
+
+### Underrated & Overrated Players
+
+Here are the top 10 most underrated and overrated players based on my model.
+
+**Top 10 Underrated**
+
+![underrated](img/underrated.png)
+
+**Top 10 Overrated**
+
+![overrated](img/overrated.png)
 
 ---
 
-## Conclusion
+## Future works
 
-### Take Away
+### More feature engineering
 
 
-### Future works
+For my future works, I can definitely do more feature engineering. 
 
+A suggestion I have is to use absolute numbers instead of average numbers. Since most of my player's stats were based on per game averages, my model overpredicted on players who performed well in very low number of games. For example, JaKarr Sampson and Tyler Zeller played less than 7 games in 2019, but they were in my top 10 most underrated player's list.
+
+I would also want to consider adjustments on the salary cap spike in 2017. When the league increased the salary cap by more than $20M in a year, it lowered the average salary on my model which was based on the percentage of salary cap. 
+
+### Nice to have
+
+Some nice to have in my model would be labeled data for `Rookie Contract` and `Injury`. 
+
+Andrew Wiggins, Nikola Jokic, and Jabari Parker were all highly overrated in my prediction because my model thought they were in their [rookie contract](https://www.si.com/nba/2018/06/22/rookie-pay-scale-how-much-money-they-make-pick) based on their age.
+
+Demarcus Cousins and Derrick Rose were highly underrated in my prediction because my model couldn't identify that they had significant injuries in their careers that would lower their salary significantly. 
+
+I believe that having these additional features would increase my prediction in my future work.
 
 ---
 
 
 ## Built With
 
-* **Software Packages:**  [Python](https://www.python.org/),  [Pandas](https://pandas.pydata.org/docs/), [Numpy](https://numpy.org/), [Matplotlib](https://matplotlib.org/), [Scipy](https://docs.scipy.org/doc/), [Seaborn](https://seaborn.pydata.org/)
-* **Hypothesis Methods:** 
+* **Software Packages:**  [Python](https://www.python.org/),  [Pandas](https://pandas.pydata.org/docs/), [Numpy](https://numpy.org/), [Scikit-Learn](https://scikit-learn.org/), [Matplotlib](https://matplotlib.org/), [Scipy](https://docs.scipy.org/doc/), [Seaborn](https://seaborn.pydata.org/)
+* **Prediction Methods:** Gradient Boosting, Random Forest, XGBoost, Ada Boost, Random Forest.
 ## Author
 
 * **Takeshi Sugiyama** - *Data Scientist*
