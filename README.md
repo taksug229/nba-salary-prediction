@@ -38,7 +38,7 @@
 ### Background
 I've been playing basketball for more than 20 years and it's one of my favorite things to do in my free time. I've been a fan of the NBA since the 90's and basketball is my favorite sport to watch.
 
-Basketball has many different stats that measure player's performance. I was curious if I can predict the salary of the NBA players based on their stats. If I can precisely predict the salary, I can give recommendation to teams to recruit the "under valued players" like in the movie, Moneyball, to maximize their return on investments. 
+Basketball has many different stats that measure player's performance. I was curious if I can predict the salary of the NBA players based on their stats. If I can precisely predict the salary, I can give recommendations to teams to recruit the "undervalued players" like in the movie, Moneyball, to maximize their return on investments.
 
 ### Data
 
@@ -49,20 +49,20 @@ I've scraped my dataset from 2 websites using Python's BeautifulSoup library.
 - https://www.basketball-reference.com (For stats)
 - https://hoopshype.com/salaries (For salary)
 
-Basketball reference had statistics of every NBA player in a given year. There were 28 different features that included, points perg game, games played, position, age, field goal percentage, and etc.
+Basketball reference had statistics of every NBA player in a given year. There were 28 different features that included, points per game, games played, position, age, field goal percentage, and etc.
 
 Hoopshype had a table of every NBA player's salary in a given year. 
 
 I've also extracted the salary cap of each year from basketball reference's [page](https://www.basketball-reference.com/contracts/salary-cap-history.html). Salary cap is the amount of money each team can spend on their entire roster for that given year.
 
 
-You can find the code I used for web scrapping [here](Insertcodelink).  
+You can find the code I used for web scrapping [here](1.&#32;Data&#32;generation&#32;(Webscrapping).ipynb).  
 
 
 
 #### Joining datasets and cleaning
 
-I've joined the 2 datasets on player's name. 
+I've joined the 2 datasets on the player's name. 
 
 In order to join properly, I've cleaned the names from both sources so that it would be as consistent as possible (So that it would join as much as possible)
 
@@ -76,7 +76,7 @@ Some steps I took to clean the names:
     - spaces
     - '*' (labeled for hall of fame players in basketball reference)
 
-However, since the 2 sources had different names for some players, (Eg. Lou Williams vs Louis Williams) I could not join on all players. 
+However, since the 2 sources had different names for some players, (Eg. Lou Williams vs Louis Williams) I couldn't join all players. 
 
 On the training set, 370 players (4.2% of data) failed to join. I've decided to drop them from my training model.
 
@@ -87,12 +87,11 @@ I've created an `id` column with '`Player name` + `year`' for each entry.
 
 All the columns in my dataset were strings so I converted them to number format. For `Salary` and `SalaryCap`, I had to replace the commas and dollar sign to convert to numbers. 
 
-Some players were registered for multiple positions (Eg. SF-SG, PG-SG, etc.). I convereted them to their primary position which was the first entry (Eg. If 'SF-SG', primary position is 'SF').
+Some players were registered for multiple positions (Eg. SF-SG, PG-SG, etc.). I converted them to their primary position which was the first entry (Eg. If 'SF-SG', the primary position is 'SF').
 
 I've ended up with 9310 rows and 33 columns after cleaning my dataset.
 - **Train Set: 2000-2018 Seasons (8780 rows, 33 columns)**
 - **Test Set: 2019 Season (530 rows, 33 columns)**
-
 
 ---
 
@@ -100,7 +99,7 @@ I've ended up with 9310 rows and 33 columns after cleaning my dataset.
 
 ### Average Salary Overtime
 
-While exploring the data, I quickly realized that the average salary and the salary cap had been steadily increasing over time. I observed a huge increase spike in salary cap in 2017 when the NBA decided to increase the salary cap from about $70M to $94M. This was the year when the Golden State Warriors were able to [acquire Kevin Durant](https://www.espn.com/nba/story/_/id/16759826/kevin-durant-announces-sign-golden-state-warriors) in free agency with the additional cap space. 
+While exploring the data, I quickly realized that the average salary and the salary cap had been steadily increasing over time. I observed a huge increase in salary cap in 2017 when the NBA decided to increase the salary cap from about $70M to $94M. This was the year when the Golden State Warriors were able to [acquire Kevin Durant](https://www.espn.com/nba/story/_/id/16759826/kevin-durant-announces-sign-golden-state-warriors) in free agency with the additional cap space. 
 
 
 This could have an effect in my prediction if I don't make any adjustments. 
@@ -116,7 +115,7 @@ I decided to normalize my salary so that it would be based off of the percentage
 
 ### Salary Distribution
 
-I plotted the normalized salary distribution, but I couldn't observe any anomalies for each year. A large portion of the player's salary were in between 0.0 and 0.1 of the salary cap.
+I plotted the normalized salary distribution, but I couldn't observe any anomalies for each year. A large portion of the player's salary was in between 0.0 and 0.1 of the salary cap.
 
 ![Salary Distribution](img/salarydistribution.png)
 
@@ -155,7 +154,7 @@ I started off my prediction with a baseline model using the average salary from 
 
 The salary cap for the 2019 season was $101.9M so this RMSE would be equivalent to about $8M in error per prediction.
 
-Based on the residual plot, I was over overpredicting many of the low paid players by 0.08 and underpredicting the top players. This does align with the distriubution of the player's salary.
+Based on the residual plot, I was overpredicting many of the low paid players by 0.08 and underpredicting the top players. This does align with the distribution of the player's salary.
 
 ![Base model residual plot](img/basemodel_residual.png)
 
@@ -169,20 +168,18 @@ I decided to proceed with Gradient Boosting since it consistently performed the 
 
 ### Feature Selection
 
-For feature selection, I tested out various combinations based off of the feature importance. After many trials and errors (testing with positive correlation features as well), my predictions were consistently performing the best with 6 features; Age, games played, total rebounds per game, minutes played per game, free throw attempts per game, and year. 
+For feature selection, I tested out various combinations based on the feature importance. After many trials and errors (testing with positive correlation features as well), my predictions were consistently performing the best with 6 features; Age, games played, total rebounds per game, minutes played per game, free throw attempts per game, and year. 
 
 I decided to proceed with these 6 variables that lowered my RMSE to **0.04653**.
 
-![](img/featureimportance.png)
-
-*I've saved my predictions results with different features in the `prediction results` file for reference.
+![Feature importance](img/featureimportance.png)
 
 ### Dataset Selection
 
-After selecting my features, I trained my prediction using different number of years. My initial train data used all of the last 19 years worth of data, so I tested my prediction by training with more recent years. 
-After testing with different sets of years, I found out that using the dataset from the last 10 years was consistenly predicting the best with an RMSE of **0.04614**. 
+After selecting my features, I trained my prediction using different numbers of years. My initial train data used all of the last 19 years worth of data, so I tested my prediction by training with more recent years. 
+After testing with different sets of years, I found out that using the dataset from the last 10 years was consistently predicting the best with an RMSE of **0.04614**. 
 
-This shows that the older seasons were not as relevant since the proportion of player's salary to the salary cap was higher. The RMSE decreased when I trained on datasets that were less than 10 years and this could be because there were not enough data to train on. It seemed like the sweet spot was using the last 10 years so I decided to proceed with this dataset.
+This shows that the older seasons were not as relevant since the proportion of player's salary to the salary cap was higher. The RMSE decreased when I trained on datasets that were less than 10 years and this could be because there was not enough data to train on. It seemed like the sweet spot was using the last 10 years so I decided to proceed with this dataset.
 
 ![Years in datasets](img/datayears.png)
 
@@ -198,9 +195,9 @@ After multiple iterations, I got a RMSE of **0.04603** using the following param
 
 ### Evaluation
 
-My best score with RMSE of **0.04603** in dollar amount for 2019 season is equivalent to $4.7M in error per prediction. My baseline model was $8M (RMSE 0.0784) in error per prediction so I was able to improve by $3.3M. 
+My best score with RMSE of **0.04603** in dollars is equivalent to $4.7M in error per prediction. My baseline model was $8M (RMSE 0.0784) in error per prediction so I was able to improve by $3.3M. 
 
-You can see that my residual plot improved significantly from the baseline model.
+You can see that my residual plot improved from the baseline model.
 
 ![Best Model Residual](img/bestmodel_residual.png)
 
@@ -238,16 +235,15 @@ Here are the top 10 most underrated and overrated players based on my model.
 
 ### More feature engineering
 
-
 For my future works, I can definitely do more feature engineering. 
 
-A suggestion I have is to use absolute numbers instead of average numbers. Since most of my player's stats were based on per game averages, my model overpredicted on players who performed well in very low number of games. For example, JaKarr Sampson and Tyler Zeller played less than 7 games in 2019, but they were in my top 10 most underrated player's list.
+A suggestion I have is to use absolute numbers instead of average numbers. Since most of my player's stats were based on per game averages, my model overpredicted on players who performed well in a very low number of games. For example, JaKarr Sampson and Tyler Zeller played less than 7 games in 2019, but they were in my top 10 most underrated player's list.
 
 I would also want to consider adjustments on the salary cap spike in 2017. When the league increased the salary cap by more than $20M in a year, it lowered the average salary on my model which was based on the percentage of salary cap. 
 
 ### Nice to have
 
-Some nice to have in my model would be labeled data for `Rookie Contract` and `Injury`. 
+Some nice to have in my model would be labeled data for "Rookie Contract" and "Injury". 
 
 Andrew Wiggins, Nikola Jokic, and Jabari Parker were all highly overrated in my prediction because my model thought they were in their [rookie contract](https://www.si.com/nba/2018/06/22/rookie-pay-scale-how-much-money-they-make-pick) based on their age.
 
@@ -267,6 +263,3 @@ I believe that having these additional features would increase my prediction in 
 * **Takeshi Sugiyama** - *Data Scientist*
   * [Linkedin](https://www.linkedin.com/in/takeshi-sugiyama/)
   * [Tableau](https://public.tableau.com/profile/takeshi.sugiyama)
-
-
-
