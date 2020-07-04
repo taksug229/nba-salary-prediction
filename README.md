@@ -2,6 +2,8 @@
 
 ![Cover](img/cover.jpg)
 
+*3 min presentation of the project can be viewed [here](https://youtu.be/3EMSZCUz70Q)
+
 ## Table of Contents
 1. [Introduction](#introduction)
     - [Background](#background)
